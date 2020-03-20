@@ -7,6 +7,48 @@
 **A crate which exports rays, axis-aligned bounding boxes, and binary bounding
 volume hierarchies.**
 
+Benchmark of my initial implementation compared to the nalgebra version.
+
+```
+ name                                                                 nalgebra ns/iter  ultraviolet ns/iter  diff ns/iter   diff %  speedup 
+ bvh::optimization::bench::bench_intersect_120k_after_optimize_00p    952               1,099                         147   15.44%   x 0.87 
+ bvh::optimization::bench::bench_intersect_120k_after_optimize_01p    166,183           174,379                     8,196    4.93%   x 0.95 
+ bvh::optimization::bench::bench_intersect_120k_after_optimize_10p    1,187,026         1,353,476                 166,450   14.02%   x 0.88 
+ bvh::optimization::bench::bench_intersect_120k_after_optimize_50p    1,949,999         2,267,949                 317,950   16.31%   x 0.86 
+ bvh::optimization::bench::bench_intersect_120k_with_rebuild_00p      950               1,093                         143   15.05%   x 0.87 
+ bvh::optimization::bench::bench_intersect_120k_with_rebuild_01p      1,021             1,169                         148   14.50%   x 0.87 
+ bvh::optimization::bench::bench_intersect_120k_with_rebuild_10p      2,004             2,238                         234   11.68%   x 0.90 
+ bvh::optimization::bench::bench_intersect_120k_with_rebuild_50p      2,252             2,501                         249   11.06%   x 0.90 
+ bvh::optimization::bench::bench_intersect_sponza_after_optimize_00p  1,659             1,994                         335   20.19%   x 0.83 
+ bvh::optimization::bench::bench_intersect_sponza_after_optimize_01p  3,280             3,937                         657   20.03%   x 0.83 
+ bvh::optimization::bench::bench_intersect_sponza_after_optimize_10p  4,416             5,111                         695   15.74%   x 0.86 
+ bvh::optimization::bench::bench_intersect_sponza_after_optimize_50p  6,924             7,835                         911   13.16%   x 0.88 
+ bvh::optimization::bench::bench_intersect_sponza_with_rebuild_00p    1,651             1,996                         345   20.90%   x 0.83 
+ bvh::optimization::bench::bench_intersect_sponza_with_rebuild_01p    1,782             2,138                         356   19.98%   x 0.83 
+ bvh::optimization::bench::bench_intersect_sponza_with_rebuild_10p    2,177             2,590                         413   18.97%   x 0.84 
+ bvh::optimization::bench::bench_intersect_sponza_with_rebuild_50p    2,783             3,270                         487   17.50%   x 0.85 
+ bvh::optimization::bench::bench_optimize_bvh_120k_00p                1,086,596         1,351,638                 265,042   24.39%   x 0.80 
+ bvh::optimization::bench::bench_optimize_bvh_120k_01p                9,970,866         7,983,913              -1,986,953  -19.93%   x 1.25 
+ bvh::optimization::bench::bench_optimize_bvh_120k_10p                72,811,524        53,253,556            -19,557,968  -26.86%   x 1.37 
+ bvh::optimization::bench::bench_optimize_bvh_120k_50p                302,252,655       215,600,127           -86,652,528  -28.67%   x 1.40 
+ bvh::optimization::bench::bench_randomize_120k_50p                   5,208,653         5,090,327                -118,326   -2.27%   x 1.02 
+ flat_bvh::bench::bench_build_1200_triangles_flat_bvh                 1,328,015         680,239                  -647,776  -48.78%   x 1.95 
+ flat_bvh::bench::bench_build_120k_triangles_flat_bvh                 185,600,059       96,599,752            -89,000,307  -47.95%   x 1.92 
+ flat_bvh::bench::bench_build_12k_triangles_flat_bvh                  15,789,963        8,021,854              -7,768,109  -49.20%   x 1.97 
+ flat_bvh::bench::bench_flatten_120k_triangles_bvh                    3,902,990         3,889,989                 -13,001   -0.33%   x 1.00 
+ flat_bvh::bench::bench_intersect_1200_triangles_flat_bvh             200               184                           -16   -8.00%   x 1.09 
+ flat_bvh::bench::bench_intersect_120k_triangles_flat_bvh             1,130             1,108                         -22   -1.95%   x 1.02 
+ flat_bvh::bench::bench_intersect_12k_triangles_flat_bvh              441               423                           -18   -4.08%   x 1.04 
+ ray::bench::bench_intersects_aabb                                    60,966            51,723                     -9,243  -15.16%   x 1.18 
+ ray::bench::bench_intersects_aabb_branchless                         60,964            51,796                     -9,168  -15.04%   x 1.18 
+ ray::bench::bench_intersects_aabb_naive                              60,973            51,773                     -9,200  -15.09%   x 1.18 
+ testbase::bench_intersect_120k_triangles_list                        905,052           1,933,707               1,028,655  113.66%   x 0.47 
+ testbase::bench_intersect_120k_triangles_list_aabb                   386,645           516,144                   129,499   33.49%   x 0.75 
+ testbase::bench_intersect_sponza_list                                635,951           1,092,405                 456,454   71.78%   x 0.58 
+ testbase::bench_intersect_sponza_list_aabb                           199,789           268,844                    69,055   34.56%   x 0.74 
+```
+
+
 ## About
 
 This crate can be used for applications which contain intersection computations of rays
