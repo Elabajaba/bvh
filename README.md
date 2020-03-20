@@ -1,11 +1,8 @@
 # bvh
-[![Build Status](https://travis-ci.org/svenstaro/bvh.svg?branch=master)](https://travis-ci.org/svenstaro/bvh)
-[![Docs Status](https://docs.rs/bvh/badge.svg)](https://docs.rs/bvh)
-[![codecov](https://codecov.io/gh/svenstaro/bvh/branch/master/graph/badge.svg)](https://codecov.io/gh/svenstaro/bvh)
-[![dependency status](https://deps.rs/repo/github/svenstaro/bvh/status.svg)](https://deps.rs/repo/github/svenstaro/bvh)
-[![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/svenstaro/bvh/blob/master/LICENSE)
-[![Crates.io](https://img.shields.io/crates/v/bvh.svg)](https://crates.io/crates/bvh)
-[![Crates.io](https://img.shields.io/crates/d/bvh.svg)](https://crates.io/crates/bvh)
+[![dependency status](https://deps.rs/repo/github/svenstaro/bvh/status.svg)](https://deps.rs/repo/github/Elabajaba/bvh)
+[![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Elabajaba/bvh/LICENSE)
+
+**A quick and dirty port of the [bvh](https://github.com/svenstaro/bvh) crate from [nalgebra](http://nalgebra.org/) to [ultraviolet](https://docs.rs/crate/ultraviolet/0.4.5). It currently does not take advantage of the packed wec data types offered by the ultraviolet crate.**
 
 **A crate which exports rays, axis-aligned bounding boxes, and binary bounding
 volume hierarchies.**
@@ -19,28 +16,28 @@ intersection test complexity is reduced from O(n) to O(log2(n)) at the cost of b
 the BVH once in advance. This technique is especially useful in ray/path tracers. For
 use in a shader this module also exports a flattening procedure, which allows for
 iterative traversal of the BVH.
-This library is built on top of [nalgebra](http://nalgebra.org/).
+This library is built on top of [ultraviolet](https://docs.rs/crate/ultraviolet/0.4.5), but currently does not do any SIMD.
 
 ## Example
 
 ```rust
-use bvh::aabb::{AABB, Bounded};
-use bvh::bvh::BVH;
-use bvh::nalgebra::{Point3, Vector3};
-use bvh::ray::Ray;
+use bvh_ultraviolet::aabb::{AABB, Bounded};
+use bvh_ultraviolet::bvh::BVH;
+use bvh_ultraviolet::ultraviolet::Vec3;
+use bvh_ultraviolet::ray::Ray;
 
-let origin = Point3::new(0.0,0.0,0.0);
-let direction = Vector3::new(1.0,0.0,0.0);
+let origin = Vec3::new(0.0,0.0,0.0);
+let direction = Vec3::new(1.0,0.0,0.0);
 let ray = Ray::new(origin, direction);
 
 struct Sphere {
-    position: Point3<f32>,
+    position: Vec3,
     radius: f32,
 }
 
 impl Bounded for Sphere {
     fn aabb(&self) -> AABB {
-        let half_size = Vector3::new(self.radius, self.radius, self.radius);
+        let half_size = Vec3::new(self.radius, self.radius, self.radius);
         let min = self.position - half_size;
         let max = self.position + half_size;
         AABB::with_bounds(min, max)
@@ -49,7 +46,7 @@ impl Bounded for Sphere {
 
 let mut spheres = Vec::new();
 for i in 0..1000u32 {
-    let position = Point3::new(i as f32, i as f32, i as f32);
+    let position = Vec3::new(i as f32, i as f32, i as f32);
     let radius = (i % 10) as f32 + 1.0;
     spheres.push(Sphere {
         position: position,
@@ -85,9 +82,12 @@ The following benchmarks are run with two different datasets:
 * A randomly generated scene with unit sized cubes containing a total of (1200, 12000, and 120000 triangles).
 * Sponza, a popular scene for benchmarking graphics engines.
 
+
 ### Intersection via traversal of the list of triangles
 
 ```rust
+// TODO redo all benchmarks comparing nalgebra version and ultraviolet version.
+// These are currently the original author's benchmarks using nalgebra.
 test testbase::bench_intersect_120k_triangles_list                       ... bench:   1,018,566 ns/iter (+/- 91,405)
 test testbase::bench_intersect_sponza_list                               ... bench:     669,474 ns/iter (+/- 18,928)
 ```
@@ -97,6 +97,8 @@ This is the most naive approach to intersecting a scene with a ray. It defines t
 ### Intersection via traversal of the list of triangles with AABB checks
 
 ```rust
+// TODO redo all benchmarks comparing nalgebra version and ultraviolet version.
+// These are currently the original author's benchmarks using nalgebra.
 test testbase::bench_intersect_120k_triangles_list_aabb                  ... bench:     400,877 ns/iter (+/- 23,775)
 test testbase::bench_intersect_sponza_list_aabb                          ... bench:     206,014 ns/iter (+/- 4,508)
 ```
@@ -107,6 +109,8 @@ increase intersection speed by filtering negative results a lot faster.
 ### Build of a BVH from scratch
 
 ```rust
+// TODO redo all benchmarks comparing nalgebra version and ultraviolet version.
+// These are currently the original author's benchmarks using nalgebra.
 test bvh::bvh::tests::bench_build_1200_triangles_bvh                     ... bench:   1,300,824 ns/iter (+/- 32,262)
 test bvh::bvh::tests::bench_build_12k_triangles_bvh                      ... bench:  15,327,304 ns/iter (+/- 360,985)
 test bvh::bvh::tests::bench_build_120k_triangles_bvh                     ... bench: 181,138,173 ns/iter (+/- 5,296,719)
@@ -121,6 +125,8 @@ number of intersections is `1280 * 720` for an HD image.
 ### Intersection via BVH traversal
 
 ```rust
+// TODO redo all benchmarks comparing nalgebra version and ultraviolet version.
+// These are currently the original author's benchmarks using nalgebra.
 test bvh::bvh::tests::bench_intersect_1200_triangles_bvh                 ... bench:         202 ns/iter (+/- 3)
 test bvh::bvh::tests::bench_intersect_120k_triangles_bvh                 ... bench:         959 ns/iter (+/- 26)
 test bvh::bvh::tests::bench_intersect_12k_triangles_bvh                  ... bench:         461 ns/iter (+/- 14)
@@ -134,6 +140,8 @@ These performance measurements show that traversing a BVH is much faster than tr
 The benchmarks for how long it takes to update the scene also contain a randomization process which takes some time.
 
 ```rust
+// TODO redo all benchmarks comparing nalgebra version and ultraviolet version.
+// These are currently the original author's benchmarks using nalgebra.
 test bvh::optimization::tests::bench_randomize_120k_50p                  ... bench:  14,248,069 ns/iter (+/- 2,368,251)
 
 test bvh::optimization::tests::bench_optimize_bvh_120k_00p               ... bench:   2,338,563 ns/iter (+/- 59,248)
@@ -157,6 +165,8 @@ These intersection tests are grouped by dataset and by the BVH generation method
 
 *120K Triangles*
 ```rust
+// TODO redo all benchmarks comparing nalgebra version and ultraviolet version.
+// These are currently the original author's benchmarks using nalgebra.
 test bvh::optimization::tests::bench_intersect_120k_after_optimize_00p   ... bench:         968 ns/iter (+/- 31)
 test bvh::optimization::tests::bench_intersect_120k_after_optimize_01p   ... bench:     147,160 ns/iter (+/- 12,886)
 test bvh::optimization::tests::bench_intersect_120k_after_optimize_10p   ... bench:   1,624,675 ns/iter (+/- 758,933)
@@ -170,6 +180,8 @@ test bvh::optimization::tests::bench_intersect_120k_with_rebuild_50p     ... ben
 
 *Sponza*
 ```rust
+// TODO redo all benchmarks comparing nalgebra version and ultraviolet version.
+// These are currently the original author's benchmarks using nalgebra.
 test bvh::optimization::tests::bench_intersect_sponza_after_optimize_00p ... bench:       1,824 ns/iter (+/- 114)
 test bvh::optimization::tests::bench_intersect_sponza_after_optimize_01p ... bench:       3,791 ns/iter (+/- 308)
 test bvh::optimization::tests::bench_intersect_sponza_after_optimize_10p ... bench:       4,794 ns/iter (+/- 212)
