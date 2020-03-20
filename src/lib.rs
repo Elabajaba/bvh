@@ -15,11 +15,11 @@
 //! ## Example
 //!
 //! ```
-//! use bvh::aabb::{AABB, Bounded};
-//! use bvh::bounding_hierarchy::{BoundingHierarchy, BHShape};
-//! use bvh::bvh::BVH;
-//! use bvh::ultraviolet::Vec3;
-//! use bvh::ray::Ray;
+//! use bvh_ultraviolet::aabb::{AABB, Bounded};
+//! use bvh_ultraviolet::bounding_hierarchy::{BoundingHierarchy, BHShape};
+//! use bvh_ultraviolet::bvh::BVH;
+//! use bvh_ultraviolet::ultraviolet::Vec3;
+//! use bvh_ultraviolet::ray::Ray;
 //!
 //! let origin = Vec3::new(0.0,0.0,0.0);
 //! let direction = Vec3::new(1.0,0.0,0.0);

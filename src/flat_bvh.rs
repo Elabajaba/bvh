@@ -157,11 +157,11 @@ impl BVH {
     /// # Example
     ///
     /// ```
-    /// use bvh::aabb::{AABB, Bounded};
-    /// use bvh::bvh::BVH;
-    /// use bvh::ultraviolet::Vec3;
-    /// use bvh::ray::Ray;
-    /// # use bvh::bounding_hierarchy::BHShape;
+    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bvh::BVH;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
     /// #     pub id: i32,
     /// #     pub pos: Vec3,
@@ -241,11 +241,11 @@ impl BVH {
     /// # Example
     ///
     /// ```
-    /// use bvh::aabb::{AABB, Bounded};
-    /// use bvh::bvh::BVH;
-    /// use bvh::ultraviolet::Vec3;
-    /// use bvh::ray::Ray;
-    /// # use bvh::bounding_hierarchy::BHShape;
+    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bvh::BVH;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
     /// #     pub id: i32,
     /// #     pub pos: Vec3,
@@ -321,12 +321,12 @@ impl BoundingHierarchy for FlatBVH {
     /// # Examples
     ///
     /// ```
-    /// use bvh::aabb::{AABB, Bounded};
-    /// use bvh::bounding_hierarchy::BoundingHierarchy;
-    /// use bvh::flat_bvh::FlatBVH;
-    /// use bvh::ultraviolet::Vec3;
-    /// use bvh::ray::Ray;
-    /// # use bvh::bounding_hierarchy::BHShape;
+    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounding_hierarchy::BoundingHierarchy;
+    /// use bvh_ultraviolet::flat_bvh::FlatBVH;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
     /// #     pub id: i32,
     /// #     pub pos: Vec3,

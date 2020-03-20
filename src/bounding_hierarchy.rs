@@ -30,10 +30,10 @@ pub trait BoundingHierarchy {
     /// # Examples
     ///
     /// ```
-    /// use bvh::aabb::{AABB, Bounded};
-    /// use bvh::bounding_hierarchy::BoundingHierarchy;
-    /// use bvh::ultraviolet::Vec3;
-    /// # use bvh::bounding_hierarchy::BHShape;
+    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounding_hierarchy::BoundingHierarchy;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
     /// #     pub id: i32,
     /// #     pub pos: Vec3,
@@ -80,13 +80,13 @@ pub trait BoundingHierarchy {
     /// let mut shapes = create_bhshapes();
     /// // Construct a normal `BVH`.
     /// {
-    ///     use bvh::bvh::BVH;
+    ///     use bvh_ultraviolet::bvh::BVH;
     ///     let bvh = BVH::build(&mut shapes);
     /// }
     ///
     /// // Or construct a `FlatBVH`.
     /// {
-    ///     use bvh::flat_bvh::FlatBVH;
+    ///     use bvh_ultraviolet::flat_bvh::FlatBVH;
     ///     let bvh = FlatBVH::build(&mut shapes);
     /// }
     /// ```
@@ -101,12 +101,12 @@ pub trait BoundingHierarchy {
     /// # Examples
     ///
     /// ```
-    /// use bvh::aabb::{AABB, Bounded};
-    /// use bvh::bounding_hierarchy::BoundingHierarchy;
-    /// use bvh::bvh::BVH;
-    /// use bvh::ultraviolet::Vec3;
-    /// use bvh::ray::Ray;
-    /// # use bvh::bounding_hierarchy::BHShape;
+    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounding_hierarchy::BoundingHierarchy;
+    /// use bvh_ultraviolet::bvh::BVH;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
     /// #     pub id: i32,
     /// #     pub pos: Vec3,

@@ -36,8 +36,8 @@ pub trait Bounded {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::{AABB, Bounded};
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// struct Something;
     ///
@@ -66,8 +66,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let aabb = AABB::with_bounds(Vec3::new(-1.0,-1.0,-1.0), Vec3::new(1.0,1.0,1.0));
     /// assert_eq!(aabb.min.x, -1.0);
@@ -84,9 +84,9 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// # extern crate bvh;
+    /// # extern crate bvh_ultraviolet;
     /// # extern crate rand;
-    /// use bvh::aabb::AABB;
+    /// use bvh_ultraviolet::aabb::AABB;
     ///
     /// # fn main() {
     /// let aabb = AABB::empty();
@@ -117,8 +117,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_inside = Vec3::new(0.125, -0.25, 0.5);
@@ -145,9 +145,9 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::EPSILON;
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::EPSILON;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_barely_outside = Vec3::new(1.000_000_1, -1.000_000_1, 1.000_000_001);
@@ -174,9 +174,9 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::EPSILON;
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::EPSILON;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_barely_outside = Vec3::new(1.000_000_1, 1.000_000_1, 1.000_000_1);
@@ -197,9 +197,9 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::EPSILON;
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::EPSILON;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_barely_outside_min = Vec3::new(-1.000_000_1, -1.000_000_1, -1.000_000_1);
@@ -238,8 +238,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let aabb1 = AABB::with_bounds(Vec3::new(-101.0, 0.0, 0.0), Vec3::new(-100.0, 1.0, 1.0));
     /// let aabb2 = AABB::with_bounds(Vec3::new(100.0, 0.0, 0.0), Vec3::new(101.0, 1.0, 1.0));
@@ -283,8 +283,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let size = Vec3::new(1.0, 1.0, 1.0);
     /// let aabb_pos = Vec3::new(-101.0, 0.0, 0.0);
@@ -332,8 +332,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let point1 = Vec3::new(0.0, 0.0, 0.0);
     /// let point2 = Vec3::new(1.0, 1.0, 1.0);
@@ -372,8 +372,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let point1 = Vec3::new(0.0, 0.0, 0.0);
     /// let point2 = Vec3::new(1.0, 1.0, 1.0);
@@ -412,8 +412,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::{AABB, Bounded};
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// struct Something;
     ///
@@ -444,8 +444,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let aabb = AABB::with_bounds(Vec3::new(-1.0,-1.0,-1.0), Vec3::new(1.0,1.0,1.0));
     /// let size = aabb.size();
@@ -462,8 +462,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(41.0,41.0,41.0);
     /// let max = Vec3::new(43.0,43.0,43.0);
@@ -485,8 +485,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let empty_aabb = AABB::empty();
     /// assert!(empty_aabb.is_empty());
@@ -508,8 +508,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(41.0,41.0,41.0);
     /// let max = Vec3::new(43.0,43.0,43.0);
@@ -530,8 +530,8 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(41.0,41.0,41.0);
     /// let max = Vec3::new(43.0,43.0,43.0);
@@ -552,9 +552,9 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::axis::Axis;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::axis::Axis;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(-100.0,0.0,0.0);
     /// let max = Vec3::new(100.0,0.0,0.0);
@@ -594,8 +594,8 @@ impl Default for AABB {
 ///
 /// # Examples
 /// ```
-/// use bvh::aabb::AABB;
-/// use bvh::ultraviolet::Vec3;
+/// use bvh_ultraviolet::aabb::AABB;
+/// use bvh_ultraviolet::ultraviolet::Vec3;
 ///
 /// let min = Vec3::new(3.0,4.0,5.0);
 /// let max = Vec3::new(123.0,123.0,123.0);
@@ -626,8 +626,8 @@ impl Index<usize> for AABB {
 ///
 /// # Examples
 /// ```
-/// use bvh::aabb::{AABB, Bounded};
-/// use bvh::ultraviolet::Vec3;
+/// use bvh_ultraviolet::aabb::{AABB, Bounded};
+/// use bvh_ultraviolet::ultraviolet::Vec3;
 ///
 /// let point_a = Vec3::new(3.0,4.0,5.0);
 /// let point_b = Vec3::new(17.0,18.0,19.0);
@@ -654,8 +654,8 @@ impl Bounded for AABB {
 ///
 /// # Examples
 /// ```
-/// use bvh::aabb::{AABB, Bounded};
-/// use bvh::ultraviolet::Vec3;
+/// use bvh_ultraviolet::aabb::{AABB, Bounded};
+/// use bvh_ultraviolet::ultraviolet::Vec3;
 ///
 /// let point = Vec3::new(3.0,4.0,5.0);
 ///

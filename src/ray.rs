@@ -55,8 +55,8 @@ impl Ray {
     ///
     /// # Examples
     /// ```
-    /// use bvh::ray::Ray;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let origin = Vec3::new(0.0,0.0,0.0);
     /// let direction = Vec3::new(1.0,0.0,0.0);
@@ -93,9 +93,9 @@ impl Ray {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ray::Ray;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let origin = Vec3::new(0.0,0.0,0.0);
     /// let direction = Vec3::new(1.0,0.0,0.0);
@@ -159,9 +159,9 @@ impl Ray {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ray::Ray;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let origin = Vec3::new(0.0,0.0,0.0);
     /// let direction = Vec3::new(1.0,0.0,0.0);
@@ -205,9 +205,9 @@ impl Ray {
     ///
     /// # Examples
     /// ```
-    /// use bvh::aabb::AABB;
-    /// use bvh::ray::Ray;
-    /// use bvh::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ray::Ray;
+    /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let origin = Vec3::new(0.0,0.0,0.0);
     /// let direction = Vec3::new(1.0,0.0,0.0);

@@ -12,7 +12,7 @@ struct MyType<T>(T);
 ///
 /// # Examples
 /// ```
-/// use bvh::axis::Axis;
+/// use bvh_ultraviolet::axis::Axis;
 ///
 /// let mut position = [1.0, 0.5, 42.0];
 /// position[Axis::Y] *= 4.0;
@@ -23,10 +23,10 @@ struct MyType<T>(T);
 /// `ultraviolet` structures are also indexable using `Axis`.
 ///
 /// ```
-/// extern crate bvh;
+/// extern crate bvh_ultraviolet;
 /// 
 ///
-/// use bvh::axis::Axis;
+/// use bvh_ultraviolet::axis::Axis;
 /// use ultraviolet::Vec3;
 ///
 /// # fn main() {

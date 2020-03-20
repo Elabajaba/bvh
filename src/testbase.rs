@@ -433,7 +433,8 @@ pub fn randomly_transform_scene(
 #[cfg(feature = "bench")]
 pub fn create_ray(seed: &mut u64, bounds: &AABB) -> Ray {
     let origin = next_Vec3(seed, bounds);
-    let direction = next_Vec3(seed, bounds).coords;
+    let direction = next_Vec3(seed, bounds);
+    // let direction = next_Vec3(seed, bounds).coords;
     Ray::new(origin, direction)
 }
 
