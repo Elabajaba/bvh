@@ -520,7 +520,7 @@ mod tests {
         build_some_bh, create_n_cubes, default_bounds, randomly_transform_scene, UnitBox,
     };
     use crate::EPSILON;
-    use nalgebra::Point3;
+    use ultraviolet::Vec3;
     use std::collections::HashSet;
 
     #[test]
@@ -543,12 +543,12 @@ mod tests {
     /// Tests whether a BVH is still consistent after a few optimization calls.
     fn test_consistent_after_optimize() {
         let (mut shapes, mut bvh) = build_some_bh::<BVH>();
-        shapes[0].pos = Point3::new(10.0, 1.0, 2.0);
-        shapes[1].pos = Point3::new(-10.0, -10.0, 10.0);
-        shapes[2].pos = Point3::new(-10.0, 10.0, 10.0);
-        shapes[3].pos = Point3::new(-10.0, 10.0, -10.0);
-        shapes[4].pos = Point3::new(11.0, 1.0, 2.0);
-        shapes[5].pos = Point3::new(11.0, 2.0, 2.0);
+        shapes[0].pos = Vec3::new(10.0, 1.0, 2.0);
+        shapes[1].pos = Vec3::new(-10.0, -10.0, 10.0);
+        shapes[2].pos = Vec3::new(-10.0, 10.0, 10.0);
+        shapes[3].pos = Vec3::new(-10.0, 10.0, -10.0);
+        shapes[4].pos = Vec3::new(11.0, 1.0, 2.0);
+        shapes[5].pos = Vec3::new(11.0, 2.0, 2.0);
 
         let refit_shape_indices = (0..6).collect();
         bvh.optimize(&refit_shape_indices, &shapes);
@@ -559,9 +559,9 @@ mod tests {
     /// Test whether a simple update on a simple BVH yields the expected optimization result.
     fn test_optimize_simple_update() {
         let mut shapes = Vec::new();
-        shapes.push(UnitBox::new(0, Point3::new(-50.0, 0.0, 0.0)));
-        shapes.push(UnitBox::new(1, Point3::new(-40.0, 0.0, 0.0)));
-        shapes.push(UnitBox::new(2, Point3::new(50.0, 0.0, 0.0)));
+        shapes.push(UnitBox::new(0, Vec3::new(-50.0, 0.0, 0.0)));
+        shapes.push(UnitBox::new(1, Vec3::new(-40.0, 0.0, 0.0)));
+        shapes.push(UnitBox::new(2, Vec3::new(50.0, 0.0, 0.0)));
 
         let mut bvh = BVH::build(&mut shapes);
         bvh.pretty_print();
@@ -592,7 +592,7 @@ mod tests {
         }
 
         // Move the first shape so that it is closer to shape #2.
-        shapes[1].pos = Point3::new(40.0, 0.0, 0.0);
+        shapes[1].pos = Vec3::new(40.0, 0.0, 0.0);
         let refit_shape_indices: HashSet<usize> = (1..2).collect();
         bvh.optimize(&refit_shape_indices, &shapes);
         bvh.pretty_print();
@@ -627,10 +627,10 @@ mod tests {
     /// Creates a small `BVH` with 4 shapes and 7 nodes.
     fn create_predictable_bvh() -> (Vec<UnitBox>, BVH) {
         let mut shapes = Vec::new();
-        shapes.push(UnitBox::new(0, Point3::new(0.0, 0.0, 0.0)));
-        shapes.push(UnitBox::new(1, Point3::new(2.0, 0.0, 0.0)));
-        shapes.push(UnitBox::new(2, Point3::new(4.0, 0.0, 0.0)));
-        shapes.push(UnitBox::new(3, Point3::new(6.0, 0.0, 0.0)));
+        shapes.push(UnitBox::new(0, Vec3::new(0.0, 0.0, 0.0)));
+        shapes.push(UnitBox::new(1, Vec3::new(2.0, 0.0, 0.0)));
+        shapes.push(UnitBox::new(2, Vec3::new(4.0, 0.0, 0.0)));
+        shapes.push(UnitBox::new(3, Vec3::new(6.0, 0.0, 0.0)));
 
         let mut nodes = Vec::new();
 
@@ -858,7 +858,7 @@ mod tests {
         let (mut shapes, mut bvh) = create_predictable_bvh();
 
         // Move the second shape.
-        shapes[2].pos = Point3::new(-40.0, 0.0, 0.0);
+        shapes[2].pos = Vec3::new(-40.0, 0.0, 0.0);
 
         // Try to rotate node 2 because node 5 changed.
         bvh.try_rotate(2, &shapes);

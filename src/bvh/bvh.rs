@@ -9,7 +9,7 @@ use crate::bounding_hierarchy::{BHShape, BoundingHierarchy};
 use crate::ray::Ray;
 use crate::utils::{concatenate_vectors, joint_aabb_of_shapes, Bucket};
 use crate::EPSILON;
-use nalgebra::Point3;
+use ultraviolet::Vec3;
 use std::f32;
 use std::iter::repeat;
 
@@ -542,8 +542,8 @@ impl BVH {
     pub fn is_consistent<Shape: BHShape>(&self, shapes: &[Shape]) -> bool {
         // The root node of the bvh is not bounded by anything.
         let space = AABB {
-            min: Point3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY),
-            max: Point3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY),
+            min: Vec3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY),
+            max: Vec3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY),
         };
 
         // The counter for all nodes.
@@ -640,8 +640,8 @@ impl BVH {
     pub fn assert_consistent<Shape: BHShape>(&self, shapes: &[Shape]) {
         // The root node of the bvh is not bounded by anything.
         let space = AABB {
-            min: Point3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY),
-            max: Point3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY),
+            min: Vec3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY),
+            max: Vec3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY),
         };
 
         // The counter for all nodes.

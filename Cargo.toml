@@ -15,10 +15,11 @@ license = "MIT"
 
 [dependencies]
 approx = "0.3"
-nalgebra = "0.20"
+# nalgebra = "0.20"
 rand = "0.7"
 log = "0.4"
 num = "0.2"
+ultraviolet = "0.4.5"
 
 [dev-dependencies]
 quickcheck = "0.9"
