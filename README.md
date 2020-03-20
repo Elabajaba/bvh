@@ -245,4 +245,5 @@ BVH requiring a check, thus leading to a higher intersection duration.
 
 ### Running the benchmark suite
 The benchmark suite uses features from the [test crate](https://doc.rust-lang.org/unstable-book/library-features/test.html) and therefore cannot be run on stable rust.
-Using a nightly toolchain, run with `cargo test --features bench` to enable them.
+Using a nightly toolchain, run with `cargo bench --features bench` to benchmark them.
+Note: If you run stable toolchain by default, you can install a nightly toolchain using rustup and run the program with `cargo +nightly bench --features bench` to run the benchmarks.
