@@ -36,16 +36,17 @@ pub trait Bounded {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounded::Bounded;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// struct Something;
     ///
     /// impl Bounded for Something {
-    ///     fn aabb(&self) -> AABB {
+    ///     fn aabb(&self) -> Aabb {
     ///         let point1 = Vec3::new(0.0,0.0,0.0);
     ///         let point2 = Vec3::new(1.0,1.0,1.0);
-    ///         AABB::with_bounds(point1, point2)
+    ///         Aabb::new(point1, point2)
     ///     }
     /// }
     ///
@@ -58,7 +59,7 @@ pub trait Bounded {
     ///
     /// [`AABB`]: struct.AABB.html
     ///
-    fn aabb(&self) -> AABB;
+    fn aabb(&self) -> Aabb;
 }
 
 impl AABB {
@@ -66,17 +67,17 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
-    /// let aabb = AABB::with_bounds(Vec3::new(-1.0,-1.0,-1.0), Vec3::new(1.0,1.0,1.0));
+    /// let aabb = Aabb::new(Vec3::new(-1.0,-1.0,-1.0), Vec3::new(1.0,1.0,1.0));
     /// assert_eq!(aabb.min.x, -1.0);
     /// assert_eq!(aabb.max.z, 1.0);
     /// ```
     ///
     /// [`AABB`]: struct.AABB.html
     ///
-    pub fn with_bounds(min: Vec3, max: Vec3) -> AABB {
+    pub fn with_bounds(min: Vec3, max: Vec3) -> Aabb {
         AABB { min, max }
     }
 
@@ -86,7 +87,7 @@ impl AABB {
     /// ```
     /// # extern crate bvh_ultraviolet;
     /// # extern crate rand;
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     ///
     /// # fn main() {
     /// let aabb = AABB::empty();
@@ -106,7 +107,7 @@ impl AABB {
     ///
     /// [`AABB`]: struct.AABB.html
     ///
-    pub fn empty() -> AABB {
+    pub fn empty() -> Aabb {
         AABB {
             min: Vec3::new(f32::INFINITY, f32::INFINITY, f32::INFINITY),
             max: Vec3::new(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY),
@@ -117,10 +118,10 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
-    /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
+    /// let aabb = Aabb::new(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_inside = Vec3::new(0.125, -0.25, 0.5);
     /// let point_outside = Vec3::new(1.0, -2.0, 4.0);
     ///
@@ -146,10 +147,10 @@ impl AABB {
     /// # Examples
     /// ```
     /// use bvh_ultraviolet::EPSILON;
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
-    /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
+    /// let aabb = Aabb::new(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_barely_outside = Vec3::new(1.000_000_1, -1.000_000_1, 1.000_000_001);
     /// let point_outside = Vec3::new(1.0, -2.0, 4.0);
     ///
@@ -175,13 +176,13 @@ impl AABB {
     /// # Examples
     /// ```
     /// use bvh_ultraviolet::EPSILON;
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
-    /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
+    /// let aabb = Aabb::new(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_barely_outside = Vec3::new(1.000_000_1, 1.000_000_1, 1.000_000_1);
     /// let center = aabb.center();
-    /// let inner_aabb = AABB::with_bounds(center, point_barely_outside);
+    /// let inner_aabb = Aabb::new(center, point_barely_outside);
     ///
     /// assert!(aabb.approx_contains_aabb_eps(&inner_aabb, EPSILON));
     /// ```
@@ -198,18 +199,24 @@ impl AABB {
     /// # Examples
     /// ```
     /// use bvh_ultraviolet::EPSILON;
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
-    /// let aabb = AABB::with_bounds(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
+    /// let aabb = Aabb::new(Vec3::new(-1.0, -1.0, -1.0), Vec3::new(1.0, 1.0, 1.0));
     /// let point_barely_outside_min = Vec3::new(-1.000_000_1, -1.000_000_1, -1.000_000_1);
     /// let point_barely_outside_max = Vec3::new(1.000_000_1, 1.000_000_1, 1.000_000_1);
-    /// let other = AABB::with_bounds(point_barely_outside_min, point_barely_outside_max);
+    /// let other = Aabb::new(point_barely_outside_min, point_barely_outside_max);
     ///
     /// assert!(aabb.relative_eq(&other, EPSILON));
     /// ```
     ///
     /// [`AABB`]: struct.AABB.html
+ 
+
+    // TODO: Profile this, see if it's the cause of the performance regressions vs the nalgebra version
+    // Initial benchmarks of this implementation backported to nalgebra version and regular nalgebra version
+    // is that it's only a noticeable difference for flat_bvh::bench::bench_build_* where it's ~20% slower.
+    
     pub fn relative_eq(&self, other: &AABB, epsilon: f32) -> bool {
         // relative_eq!(self.min, other.min, epsilon = epsilon)
         //     && relative_eq!(self.max, other.max, epsilon = epsilon)
@@ -238,11 +245,11 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
-    /// let aabb1 = AABB::with_bounds(Vec3::new(-101.0, 0.0, 0.0), Vec3::new(-100.0, 1.0, 1.0));
-    /// let aabb2 = AABB::with_bounds(Vec3::new(100.0, 0.0, 0.0), Vec3::new(101.0, 1.0, 1.0));
+    /// let aabb1 = Aabb::new(Vec3::new(-101.0, 0.0, 0.0), Vec3::new(-100.0, 1.0, 1.0));
+    /// let aabb2 = Aabb::new(Vec3::new(100.0, 0.0, 0.0), Vec3::new(101.0, 1.0, 1.0));
     /// let joint = aabb1.join(&aabb2);
     ///
     /// let point_inside_aabb1 = Vec3::new(-100.5, 0.5, 0.5);
@@ -264,8 +271,8 @@ impl AABB {
     ///
     /// [`AABB`]: struct.AABB.html
     ///
-    pub fn join(&self, other: &AABB) -> AABB {
-        AABB::with_bounds(
+    pub fn join(&self, other: &AABB) -> Aabb {
+        Aabb::new(
             Vec3::new(
                 self.min.x.min(other.min.x),
                 self.min.y.min(other.min.y),
@@ -283,15 +290,15 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let size = Vec3::new(1.0, 1.0, 1.0);
     /// let aabb_pos = Vec3::new(-101.0, 0.0, 0.0);
-    /// let mut aabb = AABB::with_bounds(aabb_pos, aabb_pos + size);
+    /// let mut aabb = Aabb::new(aabb_pos, aabb_pos + size);
     ///
     /// let other_pos = Vec3::new(100.0, 0.0, 0.0);
-    /// let other = AABB::with_bounds(other_pos, other_pos + size);
+    /// let other = Aabb::new(other_pos, other_pos + size);
     ///
     /// let point_inside_aabb = aabb_pos + size / 2.0;
     /// let point_inside_other = other_pos + size / 2.0;
@@ -332,7 +339,7 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let point1 = Vec3::new(0.0, 0.0, 0.0);
@@ -353,8 +360,8 @@ impl AABB {
     /// [`AABB`]: struct.AABB.html
     /// [`Vec3`]: http://nalgebra.org/doc/nalgebra/struct.Vec3.html
     ///
-    pub fn grow(&self, other: &Vec3) -> AABB {
-        AABB::with_bounds(
+    pub fn grow(&self, other: &Vec3) -> Aabb {
+        Aabb::new(
             Vec3::new(
                 self.min.x.min(other.x),
                 self.min.y.min(other.y),
@@ -372,7 +379,7 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let point1 = Vec3::new(0.0, 0.0, 0.0);
@@ -412,16 +419,17 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounded::Bounded;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// struct Something;
     ///
     /// impl Bounded for Something {
-    ///     fn aabb(&self) -> AABB {
+    ///     fn aabb(&self) -> Aabb {
     ///         let point1 = Vec3::new(0.0,0.0,0.0);
     ///         let point2 = Vec3::new(1.0,1.0,1.0);
-    ///         AABB::with_bounds(point1, point2)
+    ///         Aabb::new(point1, point2)
     ///     }
     /// }
     ///
@@ -436,7 +444,7 @@ impl AABB {
     /// [`AABB`]: struct.AABB.html
     /// [`Bounded`]: trait.Bounded.html
     ///
-    pub fn join_bounded<T: Bounded>(&self, other: &T) -> AABB {
+    pub fn join_bounded<T: Bounded>(&self, other: &T) -> Aabb {
         self.join(&other.aabb())
     }
 
@@ -444,10 +452,10 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
-    /// let aabb = AABB::with_bounds(Vec3::new(-1.0,-1.0,-1.0), Vec3::new(1.0,1.0,1.0));
+    /// let aabb = Aabb::new(Vec3::new(-1.0,-1.0,-1.0), Vec3::new(1.0,1.0,1.0));
     /// let size = aabb.size();
     /// assert!(size.x == 2.0 && size.y == 2.0 && size.z == 2.0);
     /// ```
@@ -462,13 +470,13 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(41.0,41.0,41.0);
     /// let max = Vec3::new(43.0,43.0,43.0);
     ///
-    /// let aabb = AABB::with_bounds(min, max);
+    /// let aabb = Aabb::new(min, max);
     /// let center = aabb.center();
     /// assert!(center.x == 42.0 && center.y == 42.0 && center.z == 42.0);
     /// ```
@@ -485,7 +493,7 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let empty_aabb = AABB::empty();
@@ -494,7 +502,7 @@ impl AABB {
     /// let min = Vec3::new(41.0,41.0,41.0);
     /// let max = Vec3::new(43.0,43.0,43.0);
     ///
-    /// let aabb = AABB::with_bounds(min, max);
+    /// let aabb = Aabb::new(min, max);
     /// assert!(!aabb.is_empty());
     /// ```
     ///
@@ -508,13 +516,13 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(41.0,41.0,41.0);
     /// let max = Vec3::new(43.0,43.0,43.0);
     ///
-    /// let aabb = AABB::with_bounds(min, max);
+    /// let aabb = Aabb::new(min, max);
     /// let surface_area = aabb.surface_area();
     /// assert!(surface_area == 24.0);
     /// ```
@@ -530,13 +538,13 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(41.0,41.0,41.0);
     /// let max = Vec3::new(43.0,43.0,43.0);
     ///
-    /// let aabb = AABB::with_bounds(min, max);
+    /// let aabb = Aabb::new(min, max);
     /// let volume = aabb.volume();
     /// assert!(volume == 8.0);
     /// ```
@@ -552,14 +560,14 @@ impl AABB {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::axis::Axis;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
     /// let min = Vec3::new(-100.0,0.0,0.0);
     /// let max = Vec3::new(100.0,0.0,0.0);
     ///
-    /// let aabb = AABB::with_bounds(min, max);
+    /// let aabb = Aabb::new(min, max);
     /// let axis = aabb.largest_axis();
     /// assert!(axis == Axis::X);
     /// ```
@@ -584,7 +592,7 @@ impl AABB {
 /// [`empty()`]: #method.empty
 ///
 impl Default for AABB {
-    fn default() -> AABB {
+    fn default() -> Aabb {
         AABB::empty()
     }
 }
@@ -594,13 +602,13 @@ impl Default for AABB {
 ///
 /// # Examples
 /// ```
-/// use bvh_ultraviolet::aabb::AABB;
+/// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
 /// use bvh_ultraviolet::ultraviolet::Vec3;
 ///
 /// let min = Vec3::new(3.0,4.0,5.0);
 /// let max = Vec3::new(123.0,123.0,123.0);
 ///
-/// let aabb = AABB::with_bounds(min, max);
+/// let aabb = Aabb::new(min, max);
 /// 
 /// # for i in 0..3 {
 /// assert_eq!(aabb[0][i], min[i]);
@@ -626,7 +634,8 @@ impl Index<usize> for AABB {
 ///
 /// # Examples
 /// ```
-/// use bvh_ultraviolet::aabb::{AABB, Bounded};
+/// use bvh_ultraviolet::bounded::Bounded;
+/// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
 /// use bvh_ultraviolet::ultraviolet::Vec3;
 ///
 /// let point_a = Vec3::new(3.0,4.0,5.0);
@@ -645,7 +654,7 @@ impl Index<usize> for AABB {
 /// [`Bounded`]: trait.Bounded.html
 ///
 impl Bounded for AABB {
-    fn aabb(&self) -> AABB {
+    fn aabb(&self) -> Aabb {
         *self
     }
 }
@@ -654,7 +663,8 @@ impl Bounded for AABB {
 ///
 /// # Examples
 /// ```
-/// use bvh_ultraviolet::aabb::{AABB, Bounded};
+/// use bvh_ultraviolet::bounded::Bounded;
+/// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
 /// use bvh_ultraviolet::ultraviolet::Vec3;
 ///
 /// let point = Vec3::new(3.0,4.0,5.0);
@@ -667,8 +677,8 @@ impl Bounded for AABB {
 /// [`Vec3`]: http://nalgebra.org/doc/nalgebra/struct.Vec3.html
 ///
 impl Bounded for Vec3 {
-    fn aabb(&self) -> AABB {
-        AABB::with_bounds(*self, *self)
+    fn aabb(&self) -> Aabb {
+        Aabb::new(*self, *self)
     }
 }
 
@@ -807,7 +817,7 @@ mod tests {
             // Generate some non-empty AABB
             let pos = tuple_to_point(&pos);
             let size_vec = Vec3::new(size, size, size);
-            let aabb = AABB::with_bounds(pos, pos + size_vec);
+            let aabb = Aabb::new(pos, pos + size_vec);
 
             // Check its surface area
             let area_a = aabb.surface_area();
@@ -853,7 +863,7 @@ mod tests {
                 .grow(&tuple_to_point(&b));
 
             // Create an AABB by using the index-access method
-            let aabb_by_index = AABB::with_bounds(aabb[0], aabb[1]);
+            let aabb_by_index = Aabb::new(aabb[0], aabb[1]);
 
             // The AABBs should be the same
             aabb.contains(&point) == aabb_by_index.contains(&point)

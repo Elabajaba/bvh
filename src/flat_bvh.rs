@@ -1,9 +1,10 @@
 //! This module exports methods to flatten the `BVH` and traverse it iteratively.
 
-use crate::aabb::{Bounded, AABB};
+use crate::bounded::Bounded;
 use crate::bounding_hierarchy::{BHShape, BoundingHierarchy};
 use crate::bvh::{BVHNode, BVH};
 use crate::ray::Ray;
+use ultraviolet::geometry::Aabb;
 
 /// A structure of a node of a flat [`BVH`]. The structure of the nodes allows for an
 /// iterative traversal approach without the necessity to maintain a stack or queue.
@@ -19,7 +20,7 @@ pub struct FlatNode {
     /// [`BVH`]: ../bvh/struct.BVH.html
     /// [`u32::max_value()`]: https://doc.rust-lang.org/std/u32/constant.MAX.html
     ///
-    pub aabb: AABB,
+    pub aabb: Option<Aabb>,
 
     /// The index of the `FlatNode` to jump to, if the [`AABB`] test is positive.
     /// If this value is [`u32::max_value()`] then the current node is a leaf node.
@@ -48,16 +49,16 @@ impl BVHNode {
     fn create_flat_branch<F, FNodeType>(
         &self,
         nodes: &[BVHNode],
-        this_aabb: &AABB,
+        this_aabb: &Aabb,
         vec: &mut Vec<FNodeType>,
         next_free: usize,
         constructor: &F,
     ) -> usize
     where
-        F: Fn(&AABB, u32, u32, u32) -> FNodeType,
+        F: Fn(Option<Aabb>, u32, u32, u32) -> FNodeType,
     {
         // Create dummy node.
-        let dummy = constructor(&AABB::empty(), 0, 0, 0);
+        let dummy = constructor(None, 0, 0, 0);
         vec.push(dummy);
         assert_eq!(vec.len() - 1, next_free);
 
@@ -67,7 +68,7 @@ impl BVHNode {
         // Replace dummy node by actual node with the entry index pointing to the subtree
         // and the exit index pointing to the next node after the subtree.
         let navigator_node = constructor(
-            this_aabb,
+            Some(*this_aabb),
             (next_free + 1) as u32,
             index_after_subtree as u32,
             u32::max_value(),
@@ -89,7 +90,7 @@ impl BVHNode {
         constructor: &F,
     ) -> usize
     where
-        F: Fn(&AABB, u32, u32, u32) -> FNodeType,
+        F: Fn(Option<Aabb>, u32, u32, u32) -> FNodeType,
     {
         match *self {
             BVHNode::Node {
@@ -101,14 +102,14 @@ impl BVHNode {
             } => {
                 let index_after_child_l = nodes[child_l_index].create_flat_branch(
                     nodes,
-                    child_l_aabb,
+                    &child_l_aabb.unwrap(),
                     vec,
                     next_free,
                     constructor,
                 );
                 nodes[child_r_index].create_flat_branch(
                     nodes,
-                    child_r_aabb,
+                    &child_r_aabb.unwrap(),
                     vec,
                     index_after_child_l,
                     constructor,
@@ -118,7 +119,7 @@ impl BVHNode {
                 let mut next_shape = next_free;
                 next_shape += 1;
                 let leaf_node = constructor(
-                    &AABB::empty(),
+                    None,
                     u32::max_value(),
                     next_shape as u32,
                     shape_index as u32,
@@ -157,9 +158,10 @@ impl BVH {
     /// # Example
     ///
     /// ```
-    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounded::Bounded;
     /// use bvh_ultraviolet::bvh::BVH;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ray::Ray;
     /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
@@ -179,10 +181,10 @@ impl BVH {
     /// # }
     /// #
     /// # impl Bounded for UnitBox {
-    /// #     fn aabb(&self) -> AABB {
+    /// #     fn aabb(&self) -> Aabb {
     /// #         let min = self.pos + Vec3::new(-0.5, -0.5, -0.5);
     /// #         let max = self.pos + Vec3::new(0.5, 0.5, 0.5);
-    /// #         AABB::with_bounds(min, max)
+    /// #         Aabb::new(min, max)
     /// #     }
     /// # }
     /// #
@@ -206,15 +208,15 @@ impl BVH {
     /// # }
     ///
     /// struct CustomStruct {
-    ///     aabb: AABB,
+    ///     aabb: Option<Aabb>,
     ///     entry_index: u32,
     ///     exit_index: u32,
     ///     shape_index: u32,
     /// }
     ///
-    /// let custom_constructor = |aabb: &AABB, entry, exit, shape_index| {
+    /// let custom_constructor = |aabb: Option<Aabb>, entry, exit, shape_index| {
     ///     CustomStruct {
-    ///         aabb: *aabb,
+    ///         aabb: aabb,
     ///         entry_index: entry,
     ///         exit_index: exit,
     ///         shape_index: shape_index,
@@ -227,7 +229,7 @@ impl BVH {
     /// ```
     pub fn flatten_custom<F, FNodeType>(&self, constructor: &F) -> Vec<FNodeType>
     where
-        F: Fn(&AABB, u32, u32, u32) -> FNodeType,
+        F: Fn(Option<Aabb>, u32, u32, u32) -> FNodeType,
     {
         let mut vec = Vec::new();
         self.nodes[0].flatten_custom(&self.nodes, &mut vec, 0, constructor);
@@ -241,9 +243,10 @@ impl BVH {
     /// # Example
     ///
     /// ```
-    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounded::Bounded;
     /// use bvh_ultraviolet::bvh::BVH;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ray::Ray;
     /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
@@ -263,10 +266,10 @@ impl BVH {
     /// # }
     /// #
     /// # impl Bounded for UnitBox {
-    /// #     fn aabb(&self) -> AABB {
+    /// #     fn aabb(&self) -> Aabb {
     /// #         let min = self.pos + Vec3::new(-0.5, -0.5, -0.5);
     /// #         let max = self.pos + Vec3::new(0.5, 0.5, 0.5);
-    /// #         AABB::with_bounds(min, max)
+    /// #         Aabb::new(min, max)
     /// #     }
     /// # }
     /// #
@@ -295,7 +298,7 @@ impl BVH {
     /// ```
     pub fn flatten(&self) -> FlatBVH {
         self.flatten_custom(&|aabb, entry, exit, shape| FlatNode {
-            aabb: *aabb,
+            aabb: aabb,
             entry_index: entry,
             exit_index: exit,
             shape_index: shape,
@@ -321,9 +324,10 @@ impl BoundingHierarchy for FlatBVH {
     /// # Examples
     ///
     /// ```
-    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounded::Bounded;
     /// use bvh_ultraviolet::bounding_hierarchy::BoundingHierarchy;
     /// use bvh_ultraviolet::flat_bvh::FlatBVH;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     /// use bvh_ultraviolet::ray::Ray;
     /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
@@ -344,10 +348,10 @@ impl BoundingHierarchy for FlatBVH {
     /// # }
     /// #
     /// # impl Bounded for UnitBox {
-    /// #     fn aabb(&self) -> AABB {
+    /// #     fn aabb(&self) -> Aabb {
     /// #         let min = self.pos + Vec3::new(-0.5, -0.5, -0.5);
     /// #         let max = self.pos + Vec3::new(0.5, 0.5, 0.5);
-    /// #         AABB::with_bounds(min, max)
+    /// #         Aabb::new(min, max)
     /// #     }
     /// # }
     /// #
@@ -397,7 +401,7 @@ impl BoundingHierarchy for FlatBVH {
 
                 // Exit the current node.
                 index = node.exit_index as usize;
-            } else if ray.intersects_aabb(&node.aabb) {
+            } else if ray.intersects_aabb(&node.aabb.unwrap()) {
                 // If entry_index is not MAX_UINT32 and the AABB test passes, then
                 // proceed to the node in entry_index (which goes down the bvh branch).
                 index = node.entry_index as usize;

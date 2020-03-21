@@ -6,14 +6,15 @@ use std::f32;
 use std::mem::transmute;
 
 use num::{FromPrimitive, Integer};
-use ultraviolet::Vec3;
 use obj::raw::object::Polygon;
 use obj::*;
 use rand::rngs::StdRng;
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
+use ultraviolet::geometry::Aabb;
+use ultraviolet::Vec3;
 
-use crate::aabb::{Bounded, AABB};
+use crate::bounded::Bounded;
 use crate::bounding_hierarchy::{BHShape, BoundingHierarchy};
 use crate::ray::Ray;
 
@@ -47,12 +48,12 @@ impl UnitBox {
     }
 }
 
-/// `UnitBox`'s `AABB`s are unit `AABB`s centered on the box's position.
+/// `UnitBox`'s `Aabb`s are unit `Aabb`s centered on the box's position.
 impl Bounded for UnitBox {
-    fn aabb(&self) -> AABB {
+    fn aabb(&self) -> Aabb {
         let min = self.pos + Vec3::new(-0.5, -0.5, -0.5);
         let max = self.pos + Vec3::new(0.5, 0.5, 0.5);
-        AABB::with_bounds(min, max)
+        Aabb::new(min, max)
     }
 }
 
@@ -150,7 +151,7 @@ pub struct Triangle {
     pub a: Vec3,
     pub b: Vec3,
     pub c: Vec3,
-    aabb: AABB,
+    aabb: Aabb,
     node_index: usize,
 }
 
@@ -160,14 +161,15 @@ impl Triangle {
             a: a,
             b: b,
             c: c,
-            aabb: AABB::empty().grow(&a).grow(&b).grow(&c),
+            aabb: Aabb::new(a, b).grow(&c),
+            // aabb: Aabb::empty().grow(&a).grow(&b).grow(&c),
             node_index: 0,
         }
     }
 }
 
 impl Bounded for Triangle {
-    fn aabb(&self) -> AABB {
+    fn aabb(&self) -> Aabb {
         self.aabb
     }
 }
@@ -315,7 +317,7 @@ pub fn next_Vec3_raw(seed: &mut u64) -> (i32, i32, i32) {
 }
 
 /// Generates a new `Vec3`, which will lie inside the given `aabb`. Mutates the seed.
-pub fn next_Vec3(seed: &mut u64, aabb: &AABB) -> Vec3 {
+pub fn next_Vec3(seed: &mut u64, aabb: &Aabb) -> Vec3 {
     let (a, b, c) = next_Vec3_raw(seed);
     use std::i32;
     let float_vector = Vec3::new(
@@ -337,16 +339,16 @@ pub fn next_Vec3(seed: &mut u64, aabb: &AABB) -> Vec3 {
     aabb.min + offset
 }
 
-/// Returns an `AABB` which defines the default testing space bounds.
-pub fn default_bounds() -> AABB {
-    AABB::with_bounds(
+/// Returns an `Aabb` which defines the default testing space bounds.
+pub fn default_bounds() -> Aabb {
+    Aabb::new(
         Vec3::new(-100_000.0, -100_000.0, -100_000.0),
         Vec3::new(100_000.0, 100_000.0, 100_000.0),
     )
 }
 
 /// Creates `n` deterministic random cubes. Returns the `Vec` of surface `Triangle`s.
-pub fn create_n_cubes(n: usize, bounds: &AABB) -> Vec<Triangle> {
+pub fn create_n_cubes(n: usize, bounds: &Aabb) -> Vec<Triangle> {
     let mut vec = Vec::new();
     let mut seed = 0;
     for _ in 0..n {
@@ -357,7 +359,7 @@ pub fn create_n_cubes(n: usize, bounds: &AABB) -> Vec<Triangle> {
 
 /// Loads the sponza model.
 #[cfg(feature = "bench")]
-pub fn load_sponza_scene() -> (Vec<Triangle>, AABB) {
+pub fn load_sponza_scene() -> (Vec<Triangle>, Aabb) {
     use std::fs::File;
     use std::io::BufReader;
 
@@ -366,9 +368,9 @@ pub fn load_sponza_scene() -> (Vec<Triangle>, AABB) {
     let sponza_obj: Obj<Triangle> = load_obj(file_input).expect("Failed to decode .obj file data.");
     let triangles = sponza_obj.vertices;
 
-    let mut bounds = AABB::empty();
+    let mut bounds = Aabb::empty();
     for triangle in &triangles {
-        bounds.join_mut(&triangle.aabb());
+        bounds.join(&triangle.aabb());
     }
 
     (triangles, bounds)
@@ -381,7 +383,7 @@ pub fn load_sponza_scene() -> (Vec<Triangle>, AABB) {
 pub fn randomly_transform_scene(
     triangles: &mut Vec<Triangle>,
     amount: usize,
-    bounds: &AABB,
+    bounds: &Aabb,
     max_offset_option: Option<f32>,
     seed: &mut u64,
 ) -> HashSet<usize> {
@@ -407,7 +409,7 @@ pub fn randomly_transform_scene(
         // let max_move_bound = bounds.max - aabb.max.coords;
         let min_move_bound = bounds.min - aabb.min;
         let max_move_bound = bounds.max - aabb.max;
-        let movement_bounds = AABB::with_bounds(min_move_bound, max_move_bound);
+        let movement_bounds = Aabb::new(min_move_bound, max_move_bound);
 
         let mut random_offset = next_Vec3(seed, &movement_bounds);
         random_offset.x = max_offset.min((-max_offset).max(random_offset.x));
@@ -431,7 +433,7 @@ pub fn randomly_transform_scene(
 /// The Ray origin will be inside the `bounds` and point to some other point inside this
 /// `bounds`.
 #[cfg(feature = "bench")]
-pub fn create_ray(seed: &mut u64, bounds: &AABB) -> Ray {
+pub fn create_ray(seed: &mut u64, bounds: &Aabb) -> Ray {
     let origin = next_Vec3(seed, bounds);
     let direction = next_Vec3(seed, bounds);
     // let direction = next_Vec3(seed, bounds).coords;
@@ -468,7 +470,7 @@ pub fn build_120k_triangles_bh<T: BoundingHierarchy>(b: &mut ::test::Bencher) {
 
 /// Benchmark intersecting the `triangles` list without acceleration structures.
 #[cfg(feature = "bench")]
-pub fn intersect_list(triangles: &[Triangle], bounds: &AABB, b: &mut ::test::Bencher) {
+pub fn intersect_list(triangles: &[Triangle], bounds: &Aabb, b: &mut ::test::Bencher) {
     let mut seed = 0;
     b.iter(|| {
         let ray = create_ray(&mut seed, &bounds);
@@ -497,17 +499,17 @@ fn bench_intersect_sponza_list(b: &mut ::test::Bencher) {
     intersect_list(&triangles, &bounds, b);
 }
 
-/// Benchmark intersecting the `triangles` list with `AABB` checks, but without acceleration
+/// Benchmark intersecting the `triangles` list with `Aabb` checks, but without acceleration
 /// structures.
 #[cfg(feature = "bench")]
-pub fn intersect_list_aabb(triangles: &[Triangle], bounds: &AABB, b: &mut ::test::Bencher) {
+pub fn intersect_list_aabb(triangles: &[Triangle], bounds: &Aabb, b: &mut ::test::Bencher) {
     let mut seed = 0;
     b.iter(|| {
         let ray = create_ray(&mut seed, &bounds);
 
         // Iterate over the list of triangles.
         for triangle in triangles {
-            // First test whether the ray intersects the AABB of the triangle.
+            // First test whether the ray intersects the Aabb of the triangle.
             if ray.intersects_aabb(&triangle.aabb()) {
                 ray.intersects_triangle(&triangle.a, &triangle.b, &triangle.c);
             }
@@ -517,7 +519,7 @@ pub fn intersect_list_aabb(triangles: &[Triangle], bounds: &AABB, b: &mut ::test
 
 #[cfg(feature = "bench")]
 #[bench]
-/// Benchmark intersecting 120,000 triangles with preceeding `AABB` tests.
+/// Benchmark intersecting 120,000 triangles with preceeding `Aabb` tests.
 fn bench_intersect_120k_triangles_list_aabb(b: &mut ::test::Bencher) {
     let bounds = default_bounds();
     let triangles = create_n_cubes(10_000, &bounds);
@@ -526,7 +528,7 @@ fn bench_intersect_120k_triangles_list_aabb(b: &mut ::test::Bencher) {
 
 #[cfg(feature = "bench")]
 #[bench]
-/// Benchmark intersecting 120,000 triangles with preceeding `AABB` tests.
+/// Benchmark intersecting 120,000 triangles with preceeding `Aabb` tests.
 fn bench_intersect_sponza_list_aabb(b: &mut ::test::Bencher) {
     let (triangles, bounds) = load_sponza_scene();
     intersect_list_aabb(&triangles, &bounds, b);
@@ -536,7 +538,7 @@ fn bench_intersect_sponza_list_aabb(b: &mut ::test::Bencher) {
 pub fn intersect_bh<T: BoundingHierarchy>(
     bh: &T,
     triangles: &[Triangle],
-    bounds: &AABB,
+    bounds: &Aabb,
     b: &mut ::test::Bencher,
 ) {
     let mut seed = 0;
@@ -546,7 +548,7 @@ pub fn intersect_bh<T: BoundingHierarchy>(
         // Traverse the `BoundingHierarchy` recursively.
         let hits = bh.traverse(&ray, triangles);
 
-        // Traverse the resulting list of positive `AABB` tests
+        // Traverse the resulting list of positive `Aabb` tests
         for triangle in &hits {
             ray.intersects_triangle(&triangle.a, &triangle.b, &triangle.c);
         }

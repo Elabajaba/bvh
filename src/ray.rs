@@ -1,10 +1,10 @@
 //! This module defines a Ray structure and intersection algorithms
 //! for axis aligned bounding boxes and triangles.
 
-use crate::aabb::AABB;
 use crate::EPSILON;
 use std::f32::INFINITY;
 use ultraviolet::Vec3;
+use ultraviolet::geometry::Aabb;
 
 /// A struct which defines a ray and some of its cached values.
 #[derive(Debug)]
@@ -15,16 +15,16 @@ pub struct Ray {
     /// The ray direction.
     pub direction: Vec3,
 
-    /// Inverse (1/x) ray direction. Cached for use in [`AABB`] intersections.
+    /// Inverse (1/x) ray direction. Cached for use in [`Aabb`] intersections.
     ///
-    /// [`AABB`]: struct.AABB.html
+    /// [`Aabb`]: struct.Aabb.html
     ///
     inv_direction: Vec3,
 
     /// Sign of the direction. 0 means positive, 1 means negative.
-    /// Cached for use in [`AABB`] intersections.
+    /// Cached for use in [`Aabb`] intersections.
     ///
-    /// [`AABB`]: struct.AABB.html
+    /// [`Aabb`]: struct.Aabb.html
     ///
     sign: Vec3,
 }
@@ -88,14 +88,14 @@ impl Ray {
         }
     }
 
-    /// Tests the intersection of a [`Ray`] with an [`AABB`] using the optimized algorithm
+    /// Tests the intersection of a [`Ray`] with an [`Aabb`] using the optimized algorithm
     /// from [this paper](http://www.cs.utah.edu/~awilliam/box/box.pdf).
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
     /// use bvh_ultraviolet::ray::Ray;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     ///
     /// let origin = Vec3::new(0.0,0.0,0.0);
     /// let direction = Vec3::new(1.0,0.0,0.0);
@@ -103,15 +103,15 @@ impl Ray {
     ///
     /// let point1 = Vec3::new(99.9,-1.0,-1.0);
     /// let point2 = Vec3::new(100.1,1.0,1.0);
-    /// let aabb = AABB::with_bounds(point1, point2);
+    /// let aabb = Aabb::new(point1, point2);
     ///
     /// assert!(ray.intersects_aabb(&aabb));
     /// ```
     ///
     /// [`Ray`]: struct.Ray.html
-    /// [`AABB`]: struct.AABB.html
+    /// [`Aabb`]: struct.Aabb.html
     ///
-    pub fn intersects_aabb(&self, aabb: &AABB) -> bool {
+    pub fn intersects_aabb(&self, aabb: &Aabb) -> bool {
         let mut ray_min = (aabb[self.sign.x as usize].x - self.origin.x) * self.inv_direction.x;
         let mut ray_max = (aabb[1 - self.sign.x as usize].x - self.origin.x) * self.inv_direction.x;
 
@@ -155,11 +155,11 @@ impl Ray {
         ray_max > 0.0
     }
 
-    /// Naive implementation of a [`Ray`]/[`AABB`] intersection algorithm.
+    /// Naive implementation of a [`Ray`]/[`Aabb`] intersection algorithm.
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ray::Ray;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
@@ -169,15 +169,15 @@ impl Ray {
     ///
     /// let point1 = Vec3::new(99.9,-1.0,-1.0);
     /// let point2 = Vec3::new(100.1,1.0,1.0);
-    /// let aabb = AABB::with_bounds(point1, point2);
+    /// let aabb = Aabb::new(point1, point2);
     ///
     /// assert!(ray.intersects_aabb_naive(&aabb));
     /// ```
     ///
     /// [`Ray`]: struct.Ray.html
-    /// [`AABB`]: struct.AABB.html
+    /// [`Aabb`]: struct.Aabb.html
     ///
-    pub fn intersects_aabb_naive(&self, aabb: &AABB) -> bool {
+    pub fn intersects_aabb_naive(&self, aabb: &Aabb) -> bool {
         let hit_min_x = (aabb.min.x - self.origin.x) * self.inv_direction.x;
         let hit_max_x = (aabb.max.x - self.origin.x) * self.inv_direction.x;
 
@@ -205,7 +205,7 @@ impl Ray {
     ///
     /// # Examples
     /// ```
-    /// use bvh_ultraviolet::aabb::AABB;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ray::Ray;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     ///
@@ -215,15 +215,15 @@ impl Ray {
     ///
     /// let point1 = Vec3::new(99.9,-1.0,-1.0);
     /// let point2 = Vec3::new(100.1,1.0,1.0);
-    /// let aabb = AABB::with_bounds(point1, point2);
+    /// let aabb = Aabb::new(point1, point2);
     ///
     /// assert!(ray.intersects_aabb_branchless(&aabb));
     /// ```
     ///
     /// [`Ray`]: struct.Ray.html
-    /// [`AABB`]: struct.AABB.html
+    /// [`Aabb`]: struct.Aabb.html
     ///
-    pub fn intersects_aabb_branchless(&self, aabb: &AABB) -> bool {
+    pub fn intersects_aabb_branchless(&self, aabb: &Aabb) -> bool {
         let tx1 = (aabb.min.x - self.origin.x) * self.inv_direction.x;
         let tx2 = (aabb.max.x - self.origin.x) * self.inv_direction.x;
 
@@ -310,19 +310,21 @@ mod tests {
     use std::cmp;
     use std::f32::INFINITY;
 
-    use crate::aabb::AABB;
     use crate::ray::Ray;
     use crate::testbase::{tuple_to_point, TupleVec};
     use crate::EPSILON;
+    use ultraviolet::geometry::Aabb;
 
     use quickcheck::quickcheck;
 
-    /// Generates a random `Ray` which points at at a random `AABB`.
-    fn gen_ray_to_aabb(data: (TupleVec, TupleVec, TupleVec)) -> (Ray, AABB) {
-        // Generate a random AABB
-        let aabb = AABB::empty()
+    /// Generates a random `Ray` which points at at a random `Aabb`.
+    fn gen_ray_to_aabb(data: (TupleVec, TupleVec, TupleVec)) -> (Ray, Aabb) {
+        // Generate a random Aabb
+        let aabb = Aabb::empty()
             .grow(&tuple_to_point(&data.0))
             .grow(&tuple_to_point(&data.1));
+        // // Generate a random Aabb
+        // let aabb = Aabb::new(tuple_to_point(&data.0),tuple_to_point(&data.1));
 
         // Get its center
         let center = aabb.center();
@@ -333,7 +335,7 @@ mod tests {
         (ray, aabb)
     }
 
-    /// Test whether a `Ray` which points at the center of an `AABB` intersects it.
+    /// Test whether a `Ray` which points at the center of an `Aabb` intersects it.
     /// Uses the optimized algorithm.
     quickcheck! {
         fn test_ray_points_at_aabb_center(data: (TupleVec, TupleVec, TupleVec)) -> bool {
@@ -342,7 +344,7 @@ mod tests {
         }
     }
 
-    /// Test whether a `Ray` which points at the center of an `AABB` intersects it.
+    /// Test whether a `Ray` which points at the center of an `Aabb` intersects it.
     /// Uses the naive algorithm.
     quickcheck! {
         fn test_ray_points_at_aabb_center_naive(data: (TupleVec, TupleVec, TupleVec)) -> bool {
@@ -351,7 +353,7 @@ mod tests {
         }
     }
 
-    /// Test whether a `Ray` which points at the center of an `AABB` intersects it.
+    /// Test whether a `Ray` which points at the center of an `Aabb` intersects it.
     /// Uses the branchless algorithm.
     quickcheck! {
         fn test_ray_points_at_aabb_center_branchless(data: (TupleVec, TupleVec, TupleVec)) -> bool {
@@ -360,8 +362,8 @@ mod tests {
         }
     }
 
-    /// Test whether a `Ray` which points away from the center of an `AABB`
-    /// does not intersect it, unless its origin is inside the `AABB`.
+    /// Test whether a `Ray` which points away from the center of an `Aabb`
+    /// does not intersect it, unless its origin is inside the `Aabb`.
     /// Uses the optimized algorithm.
     quickcheck! {
         fn test_ray_points_from_aabb_center(data: (TupleVec, TupleVec, TupleVec)) -> bool {
@@ -370,12 +372,12 @@ mod tests {
             // Invert the direction of the ray
             ray.direction = -ray.direction;
             ray.inv_direction = -ray.inv_direction;
-            !ray.intersects_aabb(&aabb) || aabb.contains(&ray.origin)
+            !ray.intersects_aabb(&aabb) || aabb.contains(ray.origin)
         }
     }
 
-    /// Test whether a `Ray` which points away from the center of an `AABB`
-    /// does not intersect it, unless its origin is inside the `AABB`.
+    /// Test whether a `Ray` which points away from the center of an `Aabb`
+    /// does not intersect it, unless its origin is inside the `Aabb`.
     /// Uses the naive algorithm.
     quickcheck! {
         fn test_ray_points_from_aabb_center_naive(data: (TupleVec, TupleVec, TupleVec)) -> bool {
@@ -384,12 +386,12 @@ mod tests {
             // Invert the ray direction
             ray.direction = -ray.direction;
             ray.inv_direction = -ray.inv_direction;
-            !ray.intersects_aabb_naive(&aabb) || aabb.contains(&ray.origin)
+            !ray.intersects_aabb_naive(&aabb) || aabb.contains(ray.origin)
         }
     }
 
-    /// Test whether a `Ray` which points away from the center of an `AABB`
-    /// does not intersect it, unless its origin is inside the `AABB`.
+    /// Test whether a `Ray` which points away from the center of an `Aabb`
+    /// does not intersect it, unless its origin is inside the `Aabb`.
     /// Uses the branchless algorithm.
     quickcheck! {
         fn test_ray_points_from_aabb_center_branchless(data: (TupleVec, TupleVec, TupleVec))
@@ -398,7 +400,7 @@ mod tests {
             // Invert the ray direction
             ray.direction = -ray.direction;
             ray.inv_direction = -ray.inv_direction;
-            !ray.intersects_aabb_branchless(&aabb) || aabb.contains(&ray.origin)
+            !ray.intersects_aabb_branchless(&aabb) || aabb.contains(ray.origin)
         }
     }
 
@@ -472,19 +474,20 @@ mod bench {
     use rand::rngs::StdRng;
     use rand::{Rng, SeedableRng};
 
-    use crate::aabb::AABB;
+    // use crate::aabb::Aabb;
+    use ultraviolet::geometry::Aabb;
     use crate::ray::Ray;
 
     use crate::testbase::{tuple_to_point, tuple_to_vector, TupleVec};
 
-    /// Generates some random deterministic `Ray`/`AABB` pairs.
-    fn gen_random_ray_aabb(rng: &mut StdRng) -> (Ray, AABB) {
+    /// Generates some random deterministic `Ray`/`Aabb` pairs.
+    fn gen_random_ray_aabb(rng: &mut StdRng) -> (Ray, Aabb) {
         let a = tuple_to_point(&rng.gen::<TupleVec>());
         let b = tuple_to_point(&rng.gen::<TupleVec>());
         let c = tuple_to_point(&rng.gen::<TupleVec>());
         let d = tuple_to_vector(&rng.gen::<TupleVec>());
 
-        let aabb = AABB::empty().grow(&a).grow(&b);
+        let aabb = Aabb::empty().grow(&a).grow(&b);
         let ray = Ray::new(c, d);
         (ray, aabb)
     }

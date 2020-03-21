@@ -63,7 +63,8 @@ This library is built on top of [ultraviolet](https://docs.rs/crate/ultraviolet/
 ## Example
 
 ```rust
-use bvh_ultraviolet::aabb::{AABB, Bounded};
+use bvh_ultraviolet::bounded::Bounded;
+use bvh_ultraviolet::ultraviolet::geometry::Aabb;
 use bvh_ultraviolet::bvh::BVH;
 use bvh_ultraviolet::ultraviolet::Vec3;
 use bvh_ultraviolet::ray::Ray;
@@ -78,11 +79,11 @@ struct Sphere {
 }
 
 impl Bounded for Sphere {
-    fn aabb(&self) -> AABB {
+    fn aabb(&self) -> Aabb {
         let half_size = Vec3::new(self.radius, self.radius, self.radius);
         let min = self.position - half_size;
         let max = self.position + half_size;
-        AABB::with_bounds(min, max)
+        Aabb::new(min, max)
     }
 }
 

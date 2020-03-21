@@ -1,6 +1,6 @@
 //! This module defines the `BoundingHierarchy` trait.
 
-use crate::aabb::Bounded;
+use crate::bounded::Bounded;
 use crate::ray::Ray;
 
 /// Describes a shape as referenced by a [`BoundingHierarchy`] leaf node.
@@ -30,8 +30,9 @@ pub trait BoundingHierarchy {
     /// # Examples
     ///
     /// ```
-    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounded::Bounded;
     /// use bvh_ultraviolet::bounding_hierarchy::BoundingHierarchy;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
     /// # use bvh_ultraviolet::bounding_hierarchy::BHShape;
     /// # pub struct UnitBox {
@@ -51,10 +52,10 @@ pub trait BoundingHierarchy {
     /// # }
     /// #
     /// # impl Bounded for UnitBox {
-    /// #     fn aabb(&self) -> AABB {
+    /// #     fn aabb(&self) -> Aabb {
     /// #         let min = self.pos + Vec3::new(-0.5, -0.5, -0.5);
     /// #         let max = self.pos + Vec3::new(0.5, 0.5, 0.5);
-    /// #         AABB::with_bounds(min, max)
+    /// #         Aabb::new(min, max)
     /// #     }
     /// # }
     /// #
@@ -101,7 +102,8 @@ pub trait BoundingHierarchy {
     /// # Examples
     ///
     /// ```
-    /// use bvh_ultraviolet::aabb::{AABB, Bounded};
+    /// use bvh_ultraviolet::bounded::Bounded;
+    /// use bvh_ultraviolet::ultraviolet::geometry::Aabb;
     /// use bvh_ultraviolet::bounding_hierarchy::BoundingHierarchy;
     /// use bvh_ultraviolet::bvh::BVH;
     /// use bvh_ultraviolet::ultraviolet::Vec3;
@@ -124,10 +126,10 @@ pub trait BoundingHierarchy {
     /// # }
     /// #
     /// # impl Bounded for UnitBox {
-    /// #     fn aabb(&self) -> AABB {
+    /// #     fn aabb(&self) -> Aabb {
     /// #         let min = self.pos + Vec3::new(-0.5, -0.5, -0.5);
     /// #         let max = self.pos + Vec3::new(0.5, 0.5, 0.5);
-    /// #         AABB::with_bounds(min, max)
+    /// #         Aabb::new(min, max)
     /// #     }
     /// # }
     /// #

@@ -1,7 +1,7 @@
 //! Utilities module.
 
-use crate::aabb::AABB;
 use crate::bounding_hierarchy::BHShape;
+use ultraviolet::geometry::Aabb;
 
 /// Concatenates the list of vectors into a single vector.
 /// Drains the elements from the source `vectors`.
@@ -20,8 +20,8 @@ pub struct Bucket {
     /// The number of shapes in this `Bucket`.
     pub size: usize,
 
-    /// The joint `AABB` of the shapes in this `Bucket`.
-    pub aabb: AABB,
+    /// The joint `Aabb` of the shapes in this `Bucket`.
+    pub aabb: Option<Aabb>,
 }
 
 impl Bucket {
@@ -29,32 +29,47 @@ impl Bucket {
     pub fn empty() -> Bucket {
         Bucket {
             size: 0,
-            aabb: AABB::empty(),
+            aabb: None,
         }
     }
 
-    /// Extend this `Bucket` by a shape with the given `AABB`.
-    pub fn add_aabb(&mut self, aabb: &AABB) {
+    /// Extend this `Bucket` by a shape with the given `Aabb`.
+    pub fn add_aabb(&mut self, aabb: &Aabb) {
         self.size += 1;
-        self.aabb = self.aabb.join(aabb);
+        self.aabb = match self.aabb {
+            Some(bbox) => Some(bbox.join(aabb)),
+            None => Some(*aabb),
+        }
     }
 
     /// Join the contents of two `Bucket`s.
     pub fn join_bucket(a: Bucket, b: &Bucket) -> Bucket {
         Bucket {
             size: a.size + b.size,
-            aabb: a.aabb.join(&b.aabb),
+            aabb: match (a.aabb, b.aabb) {
+                (None, None) => None,
+                (Some(a_bbox), None) => Some(a_bbox),
+                (None, Some(b_bbox)) => Some(b_bbox),
+                (Some(a_bbox), Some(b_bbox)) => Some(a_bbox.join(&b_bbox))
+            } //Some(a.aabb.unwrap().join(&b.aabb.unwrap())),
         }
     }
 }
 
-pub fn joint_aabb_of_shapes<Shape: BHShape>(indices: &[usize], shapes: &[Shape]) -> AABB {
-    let mut aabb = AABB::empty();
+pub fn joint_aabb_of_shapes<Shape: BHShape>(indices: &[usize], shapes: &[Shape]) -> Aabb {
+    let mut aabb: Option<Aabb> = None;
     for index in indices {
         let shape = &shapes[*index];
-        aabb.join_mut(&shape.aabb());
+        aabb = match aabb {
+            Some(bbox) => Some(bbox.join(&shape.aabb())),
+            None => Some(shape.aabb()),
+        };
+        // aabb.unwrap().join(&shape.aabb());
     }
-    aabb
+    match aabb {
+        Some(bbox) => bbox,
+        None => panic!()
+    }
 }
 
 #[cfg(test)]

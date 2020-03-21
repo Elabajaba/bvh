@@ -17,8 +17,8 @@ license = "MIT"
 rand = "0.7"
 log = "0.4"
 num = "0.2"
-ultraviolet = "0.4.5"
-
+# ultraviolet = "0.4.5"
+ultraviolet = { git = "https://github.com/Elabajaba/ultraviolet", branch = "equality" }
 [dev-dependencies]
 quickcheck = "0.9"
 obj-rs = "0.5"

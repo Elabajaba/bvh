@@ -15,10 +15,11 @@
 //! ## Example
 //!
 //! ```
-//! use bvh_ultraviolet::aabb::{AABB, Bounded};
+//! use bvh_ultraviolet::bounded::Bounded;
 //! use bvh_ultraviolet::bounding_hierarchy::{BoundingHierarchy, BHShape};
 //! use bvh_ultraviolet::bvh::BVH;
 //! use bvh_ultraviolet::ultraviolet::Vec3;
+//! use bvh_ultraviolet::ultraviolet::geometry::Aabb;
 //! use bvh_ultraviolet::ray::Ray;
 //!
 //! let origin = Vec3::new(0.0,0.0,0.0);
@@ -32,11 +33,11 @@
 //! }
 //!
 //! impl Bounded for Sphere {
-//!     fn aabb(&self) -> AABB {
+//!     fn aabb(&self) -> Aabb {
 //!         let half_size = Vec3::new(self.radius, self.radius, self.radius);
 //!         let min = self.position - half_size;
 //!         let max = self.position + half_size;
-//!         AABB::with_bounds(min, max)
+//!         Aabb::new(min, max)
 //!     }
 //! }
 //!
@@ -65,7 +66,6 @@
 //! let hit_sphere_aabbs = bvh.traverse(&ray, &spheres);
 //! ```
 //!
-//! [`nalgebra`]: http://nalgebra.org/doc/nalgebra/
 //!
 
 // #![deny(missing_docs)]
@@ -82,7 +82,7 @@ pub use ultraviolet;
 /// TODO: replace by/add ULPS/relative float comparison methods.
 pub const EPSILON: f32 = 0.00001;
 
-pub mod aabb;
+pub mod bounded;
 pub mod axis;
 pub mod bounding_hierarchy;
 pub mod bvh;
